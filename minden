@@ -1,0 +1,131 @@
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+
+
+
+// Több osztály.
+// Öröklődés.
+// HashSet, HashMap, ArrayList, tömb és lista használata.
+// for ciklusok végigjárásával adatok kezelése.
+// toString() metódus felülírása.
+// Konstruktor túlterhelés.
+// Polimorfizmus.
+// super() használata.
+
+
+class Sárkány {
+    protected String név;
+    protected int életkor;
+    
+    public Sárkány(String név, int életkor) {
+        this.név = név;
+        this.életkor = életkor;
+    }
+
+    @Override
+    public String toString() {
+        return "Sárkány neve: " + név + ", életkor: " + életkor;
+    }
+
+    public void üvölt() {
+        System.out.println(név + " üvölt!");
+    }
+}
+
+class Tűzsárkány extends Sárkány {
+    private boolean tüzetOkad;
+
+    // Konstruktor túlterhelés
+    public Tűzsárkány(String név, int életkor, boolean tüzetOkad) {
+        super(név, életkor);
+        this.tüzetOkad = tüzetOkad;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Tüzet okad: " + (tüzetOkad ? "Igen" : "Nem");
+    }
+
+    @Override
+    public void üvölt() {
+        super.üvölt();
+        System.out.println(név + " lángokat okád!");
+    }
+}
+
+class Jegesárkány extends Sárkány {
+    private boolean fagyaszt;
+
+    public Jegesárkány(String név, int életkor, boolean fagyaszt) {
+        super(név, életkor);
+        this.fagyaszt = fagyaszt;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Fagyaszt: " + (fagyaszt ? "Igen" : "Nem");
+    }
+
+    @Override
+    public void üvölt() {
+        super.üvölt();
+        System.out.println(név + " jeges szelet fúj!");
+    }
+}
+
+public class SárkányMenedzsment {
+    public static void main(String[] args) {
+        // 1. Tömb használata sárkányok tárolására
+        Sárkány[] sárkányTömb = new Sárkány[3];
+        sárkányTömb[0] = new Tűzsárkány("Tűzvihar", 100, true);
+        sárkányTömb[1] = new Jegesárkány("Jégszárny", 80, false);
+        sárkányTömb[2] = new Tűzsárkány("Lángoló", 120, true);
+
+        System.out.println("Tömbben lévő sárkányok:");
+        for (Sárkány s : sárkányTömb) {
+            System.out.println(s);
+        }
+
+        // 2. ArrayList használata
+        ArrayList<Sárkány> sárkányLista = new ArrayList<>();
+        sárkányLista.add(new Jegesárkány("Hólepel", 50, true));
+        sárkányLista.add(new Tűzsárkány("Tűzvihara", 200, true));
+
+        System.out.println("\nArrayList-ben lévő sárkányok:");
+        for (Sárkány s : sárkányLista) {
+            System.out.println(s);
+        }
+
+        // 3. HashSet használata (Többszörös példányok nélkül)
+        HashSet<Sárkány> sárkánySet = new HashSet<>();
+        sárkánySet.add(new Tűzsárkány("Tűzláng", 30, true));
+        sárkánySet.add(new Jegesárkány("Fagymező", 60, false));
+
+        System.out.println("\nHashSet-ben lévő sárkányok:");
+        for (Sárkány s : sárkánySet) {
+            System.out.println(s);
+        }
+
+        // 4. HashMap használata, ahol a kulcs a sárkány neve és az érték a sárkány
+        HashMap<String, Sárkány> sárkányMap = new HashMap<>();
+        sárkányMap.put("Vihar", new Tűzsárkány("Vihar", 90, false));
+        sárkányMap.put("Fagy", new Jegesárkány("Fagy", 110, true));
+
+        System.out.println("\nHashMap-ben lévő sárkányok:");
+        for (String kulcs : sárkányMap.keySet()) {
+            System.out.println(kulcs + " - " + sárkányMap.get(kulcs));
+        }
+
+        // 5. Polimorfizmus bemutatása - különböző típusú sárkányok használata egy listában
+        List<Sárkány> sárkányPolimorfLista = new ArrayList<>();
+        sárkányPolimorfLista.add(new Tűzsárkány("Tűz", 150, true));
+        sárkányPolimorfLista.add(new Jegesárkány("Jég", 95, false));
+
+        System.out.println("\nPolimorfizmus - különböző típusú sárkányok:");
+        for (Sárkány s : sárkányPolimorfLista) {
+            s.üvölt();  // Polimorf hívás, minden sárkány saját üvöltését végzi el
+        }
+    }
+}
