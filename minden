@@ -127,5 +127,8 @@ public class SárkányMenedzsment {
         for (Sárkány s : sárkányPolimorfLista) {
             s.üvölt();  // Polimorf hívás, minden sárkány saját üvöltését végzi el
         }
+
+
+        Array.sort(tömbneve) így lehet rendezni, számra és betűre is
     }
 }
