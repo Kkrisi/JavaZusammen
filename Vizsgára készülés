@@ -1,9 +1,16 @@
 Rendezés
   Java típusokra
-  Arrays.sort
-  Collections.sort
+    - Arrays.sort
+    - Collections.sort
+
+  Saját típusokra:
+    - Comparable
+
 
   generikus típus paraméter:
     private <T> void m(T param){
       t valtozo = param
   }
+
+Mi az az absztrakt osztály?!
+Utánna nézni hogy mi lesz az év végi programozós vizsgá, java feladatok, react feladatok, php, egyéb?
