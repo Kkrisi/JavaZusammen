@@ -5,7 +5,8 @@ Rendezés
 
   Saját típusokra:
     - Comparable
-
+    - Collator
+    - Comparator
 
   generikus típus paraméter:
     private <T> void m(T param){
