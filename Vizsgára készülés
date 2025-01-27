@@ -1,0 +1,9 @@
+Rendezés
+  Java típusokra
+  Arrays.sort
+  Collections.sort
+
+  generikus típus paraméter:
+    private <T> void m(T param){
+      t valtozo = param
+  }
