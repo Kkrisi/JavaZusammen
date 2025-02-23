@@ -1,0 +1,418 @@
+Fájlbaírás:
+1.	A szöveges fájlba írásra a BufferedWriter és FileWriter
+2.	A bináris fájlba írásra az ObjectOutputStream osztály
+
+        String textFileName = "output_text.txt";	// 1. Szöveges fájlba írás
+        writeTextToFile(textFileName);
+
+        String binaryFileName = "output_binary.dat";	// 2. Bináris fájlba írás
+        writeBinaryToFile(binaryFileName);
+    }
+
+    // Szöveges fájlba írás
+    private static void writeTextToFile(String fileName) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write("Ez egy szöveges fájl.");
+            writer.newLine();
+            writer.write("Második sor a szöveges fájlban.");
+            System.out.println("Szöveges fájl sikeresen írva: " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Bináris fájlba írás
+    private static void writeBinaryToFile(String fileName) {
+        // Létrehozunk egy Listát, amit binárisan fogunk menteni
+        List<String> data = new ArrayList<>();
+        data.add("Első elem");
+        data.add("Második elem");
+        data.add("Harmadik elem");
+
+        try (ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            // Az objektumot bináris formában írjuk a fájlba
+            objectOut.writeObject(data);
+            System.out.println("Bináris fájl sikeresen írva: " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+Interfészek:
+// Definiálunk egy interfészt, amely egy általános állat viselkedését írja le
+interface Animal {
+    void eat();       // Minden állatnak ennie kell
+}
+
+class Dog implements Animal {
+    @Override
+    public void eat() {
+        System.out.println("The dog is eating.");
+    }
+}
+
+
+class Cat implements Animal {
+    @Override
+    public void eat() {
+        System.out.println("The cat is eating.");
+    }
+}
+
+public class InterfaceExample {
+    public static void main(String[] args) {
+        // Létrehozzuk az állatokat
+        Animal myDog = new Dog();
+        Animal myCat = new Cat();
+
+        myDog.eat();        // The dog is eating.
+        myCat.eat();        // The cat is eating.
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Osztály:
+public class EmberModell {
+    
+    private String nev;
+    private int kor;
+    private ArrayList<String> nyelvek;
+    private boolean szuletesnap;
+    
+    public EmberModell(String nev, int kor){
+        this(nev, kor, new ArrayList<>(), false);
+    };
+    
+    public EmberModell(String nev, int kor, ArrayList<String> nyelvek){
+        this(nev, kor, nyelvek, false);
+    };
+    
+    public EmberModell(String nev, int kor, boolean szuletesnap){
+        this(nev, kor, new ArrayList<>(), szuletesnap);
+    };
+    
+    public EmberModell(String nev, int kor, ArrayList<String> nyelvek, boolean szuletesnap){
+        this.nev = nev;
+        this.nyelvek = nyelvek;
+        this.szuletesnap = szuletesnap;
+        
+        this.kor = this.szuletesnap ? kor++ : kor;
+    };
+    
+   
+    public void oregedik(){
+        this.kor++;
+    };
+    
+    public void nyelvetTanul(String nyelv){
+        this.nyelvek.add(nyelv);
+    };
+
+
+Absztrachálás:
+
+// Absztrakt osztály
+abstract class Animal {
+    String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    // Absztrakt metódus: nem tartalmaz implementációt
+    public abstract void makeSound();
+
+    // Normál metódus: tartalmaz implementációt
+    public void eat() {
+        System.out.println(name + " is eating.");
+    }
+}
+
+// A Dog osztály örökli az Animal osztályt és implementálja a makeSound metódust
+class Dog extends Animal {
+
+    public Dog(String name) {
+        super(name);
+    }
+
+    // Az absztrakt metódust felülírjuk
+    @Override
+    public void makeSound() {
+        System.out.println(name + " barks.");
+    }
+}
+
+
+
+
+
+
+
+Adatszerkezetek:
+class Tűzsárkány extends Sárkány {
+private boolean tüzetOkad;
+    public Tűzsárkány(String név, int életkor, boolean tüzetOkad) {
+        super(név, életkor);
+        this.tüzetOkad = tüzetOkad;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", Tüzet okad: " + (tüzetOkad ? "Igen" : "Nem");
+    }
+
+Másik osztály példa:
+public class SárkányMenedzsment {
+    public static void main(String[] args) {
+        // 1. Tömb használata sárkányok tárolására
+        Sárkány[] sárkányTömb = new Sárkány[3];
+        sárkányTömb[0] = new Tűzsárkány("Tűzvihar", 100, true);
+        sárkányTömb[1] = new Jegesárkány("Jégszárny", 80, false);
+        sárkányTömb[2] = new Tűzsárkány("Lángoló", 120, true);
+
+        System.out.println("Tömbben lévő sárkányok:");
+        for (Sárkány s : sárkányTömb) {
+            System.out.println(s);
+        }
+
+        // 2. ArrayList használata
+        ArrayList<Sárkány> sárkányLista = new ArrayList<>();
+        sárkányLista.add(new Jegesárkány("Hólepel", 50, true));
+        sárkányLista.add(new Tűzsárkány("Tűzvihara", 200, true));
+
+        System.out.println("\nArrayList-ben lévő sárkányok:");
+        for (Sárkány s : sárkányLista) {
+            System.out.println(s);
+        }
+
+        // 3. HashSet használata (Többszörös példányok nélkül)
+        HashSet<Sárkány> sárkánySet = new HashSet<>();
+        sárkánySet.add(new Tűzsárkány("Tűzláng", 30, true));
+        sárkánySet.add(new Jegesárkány("Fagymező", 60, false));
+
+        System.out.println("\nHashSet-ben lévő sárkányok:");
+        for (Sárkány s : sárkánySet) {
+            System.out.println(s);
+        }
+
+        // 4. HashMap használata, ahol a kulcs a sárkány neve és az érték a sárkány
+        HashMap<String, Sárkány> sárkányMap = new HashMap<>();
+        sárkányMap.put("Vihar", new Tűzsárkány("Vihar", 90, false));
+        sárkányMap.put("Fagy", new Jegesárkány("Fagy", 110, true));
+
+        System.out.println("\nHashMap-ben lévő sárkányok:");
+        for (String kulcs : sárkányMap.keySet()) {
+            System.out.println(kulcs + " - " + sárkányMap.get(kulcs));
+        }
+
+        // 5. Polimorfizmus bemutatása - különböző típusú sárkányok használata egy listában
+        List<Sárkány> sárkányPolimorfLista = new ArrayList<>();
+        sárkányPolimorfLista.add(new Tűzsárkány("Tűz", 150, true));
+        sárkányPolimorfLista.add(new Jegesárkány("Jég", 95, false));
+
+        System.out.println("\nPolimorfizmus - különböző típusú sárkányok:");
+        for (Sárkány s : sárkányPolimorfLista) {
+            s.üvölt();  // Polimorf hívás, minden sárkány saját üvöltését végzi el
+        }
+
+
+        Array.sort(tömbneve) így lehet rendezni, számra és betűre is
+    }
+
+
+Egyéb adatszerkezetek: kollekciok: 
+public class KollekciokProgram {
+
+    private static final Random rnd = new Random();
+    
+    private static ArrayList<Integer>egeszek;
+    private static HashSet<Integer>kulonbozoek;
+    private static HashMap<Integer, Integer> statisztika;
+    
+    public static void main(String[] args) {
+        egeszek = new ArrayList<>();
+        feltolt();
+        kiirLista("Páros és páratlan: ");
+        kiveszParatlant();
+        kiirLista("csak páros: ");
+        kulonbozoek();
+        kiirHalmaz();
+        melyikbolMennyi();
+        kiirMap();
+    }
+
+    private static void feltolt() {
+        for (int i = 0; i < 20; i++) {
+            egeszek.add(rnd.nextInt(10, 21));
+        }
+    }
+
+    private static void kiirLista(String cim) {
+        System.out.println(cim);
+        for (int szam : egeszek) {
+            System.out.print(szam + " ");
+        }
+        System.out.println("");
+    }
+
+    private static void kiveszParatlant() {
+        for (int i = egeszek.size()-1; i >=0 ; i--) {
+            if(egeszek.get(i) % 2 == 1){
+                egeszek.remove(i);
+            }
+        }
+    }
+
+    private static void kulonbozoek() {
+        kulonbozoek = new HashSet<>(egeszek);
+    }
+
+    private static void kiirHalmaz() {
+        System.out.println("Különböző elemek: ");
+        for (int szam : kulonbozoek) {
+            System.out.print(szam + " ");
+        }
+        System.out.println("");
+    }
+
+    private static void melyikbolMennyi() {
+        statisztika = new HashMap<>();
+        for (int szam : egeszek) {
+            int kulcs = szam;
+            if(statisztika.containsKey(kulcs)){
+                //a meglévő értéket növeljük
+                int ertek = statisztika.get(kulcs);
+                statisztika.put(kulcs, ++ertek);
+            }else{
+                //létrehozzuk a kulcsot 1 értékkel
+                statisztika.put(kulcs, 1);
+            }
+        }
+    }
+
+    private static void kiirMap() {
+        System.out.println("Melyikből mennyi:");
+        /*form tab */
+        
+        for(Map.Entry<Integer, Integer> entry : statisztika.entrySet()){
+            int kulcs = entry.getKey();
+            int ertek = entry.getValue();
+            String s = "[%d] = %d%n".formatted(kulcs, ertek);
+            System.out.printf(s);
+        }
+        
+    }
+
+
+Tesztesetek:
+class KosarTest {
+    Kosar kosar;
+    @BeforeEach
+    void ujKosarEgyRuhaval(){
+        kosar = new Kosar();
+        kosar.felvesz(new RuhaTermek(4300, "ruha 1", "farmer"));
+    }
+
+    @Test
+    void testFelvesz(){
+        kosar.felvesz(new EtelTermek(1950, "étel 1", "tartós"));
+        assertTrue(kosar.getTermekek().size() == 2);
+    }
+
+
+
+Másik teszteset:
+   @Test
+   void testKstrSzerzok(){
+       Konyv konyv;
+       konyv = new Konyv("sz", "cim1", 1000,1978);
+       assertEquals(1, konyv.getSzerzok().size());
+
+       List<String>szerzok = List.of("sz1", "sz1");
+       konyv = new Konyv(szerzok, "cim1", 1000,1978);
+       assertEquals(1, konyv.getSzerzok().size());
+
+       szerzok = List.of("sz1", "sz2", "sz3");
+       konyv = new Konyv(szerzok, "cim1", 1000,1978);
+       assertEquals(konyv.getSzerzok().size(), szerzok.size());
+       konyv.setSzerzok("sz4");
+       assertTrue(konyv.getSzerzok().size() > szerzok.size());
+   }
+
+   @Test
+   void testEgyformak(){
+       Konyv k1 = new Konyv("sz", "cim1", 1000,1978);
+       k1.setAr(2000);
+       k1.setKiadasiEv(2000);
+       Konyv k2 = new Konyv("sz", "cim1", 1000,1978);
+       assertEquals(k1, k2);
+   } 
+
+Rendezés:
+int[ ] numbers = {5, 2, 8, 3, 1}; 
+Arrays.sort(numbers);	// növekvő sorrendben
+
+List<Integer> numbers = new ArrayList<>(Arrays.asList(5, 2, 8, 3, 1)); 
+Collections.sort(numbers);
+
+
+Comparable:
+        List<Person> people = new ArrayList<>();
+        people.add(new Person("Alice", 30));
+        people.add(new Person("Charlie", 35));
+
+        Collections.sort(people);
+        System.out.println("Rendezett lista: " + people);
+
+
+Collator:
+        List<String> words = new ArrayList<>();
+        words.add("orange");
+        words.add("banana");
+
+        Collator collator = Collator.getInstance();
+        Collections.sort(words, collator);
+   System.out.println("Rendezett lista: " + words);
+
+
+
+Comparator:
+        List<Person> people = new ArrayList<>();
+        people.add(new Person("Alice", 30));
+        people.add(new Person("Bob", 25));
+
+        Comparator<Person> ageComparator = (p1, p2) -> Integer.compare(p1.age, p2.age);
+        Collections.sort(people, ageComparator);
+System.out.println("Rendezett lista: " + people);
+
+
+
+
+
+
+
+
+
