@@ -13,6 +13,8 @@ import java.util.List;
 // Konstruktor túlterhelés.
 // Polimorfizmus.
 // super() használata.
+// szöveges fájl-be/ki olvasás
+// iterálás osztályon
 
 
 class Sárkány {
@@ -132,3 +134,715 @@ public class SárkányMenedzsment {
         Array.sort(tömbneve) így lehet rendezni, számra és betűre is
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------- szöveges fájl be/ki olvasás kezdete ------------------------------------------------
+    public Main() {
+        beolvasas();
+        kiiras();
+    }
+
+    private void beolvasas() {
+        String fn = "adatok.txt";
+        try {
+            List<String> sorok = Files.readAllLines(Path.of(fn));
+            sorok.forEach(System.out::println);
+
+        } catch (IOException e) {
+            System.err.println("Hiba a fájl OLVASÁSA közben!" + e.getMessage());
+        }
+    }
+
+    private void kiiras() {
+        String fn = "eredmeny.txt";
+        String tartalom = "ezt írjuk ki\n több sorban\nVÉGE";
+        try {
+            Files.write(Path.of(fn), tartalom.getBytes());
+        } catch (IOException e) {
+            System.err.println("Hiba a fájl ÍRÁSA közben!" + e.getMessage());
+        }
+    }
+--------------------------------------- szöveges fájl be/ki olvasás vége ------------------------------------------------
+
+
+
+
+
+
+
+---------------------------------------------------- Osztály Iterálása kezdete --------------------------------------------------------
+A Konyvtar osztály implementálja az Iterable<Konyv> interfészt. Az Iterable interfész lehetővé teszi, hogy az osztály bejárható legyen for-each ciklussal.
+public class Konyvtar implements Iterable<Konyv>{
+    private List<Konyv> konyvek;
+
+    public Konyvtar() {
+        Konyv k1 = new Konyv("c1", "sz1", 1,1);
+        Konyv k2 = new Konyv("c2", "sz2", 2,2);
+        konyvek = new ArrayList<>();
+        konyvek.add(k1);
+        konyvek.add(k2);
+    }
+
+    @Override
+    public Iterator<Konyv> iterator() {
+        /* konyvtár foreach szerkezetben használható: */
+        return konyvek.iterator();
+
+        //return new ForditottCimIterator();
+    }
+
+-Mainbe így iratjuk ki:
+Konyvtar konyvtar = new Konyvtar();
+
+        for (Konyv konyv : konyvtar) {
+            System.out.println(konyv);
+        }
+---------------------------------------------------- Osztály Iterálása kezdete --------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------- Konstruktorba egy szót várunk, konsttruktorba egy vagy több szerző, UUID random kezdete --------------------------------------------
+public class Konyv implements Serializable {
+    private String cim;
+    private List<String> szerzok;
+    private int kiadasEve;
+    private int ara;
+    private transient UUID id;
+
+    public Konyv(String sor){
+        String[] adatok = sor.split(";");
+        String cim = adatok[0];
+        this.cim = cim;
+
+        String szerzokSor = adatok[1];
+        String[] szerzok = szerzokSor.split(",");
+        this.szerzok = new ArrayList<>();
+        for (String szerzo : szerzok) {
+            this.szerzok.add(szerzo);
+        }
+
+        int kiadasEve = Integer.parseInt(adatok[2]);
+        this.kiadasEve = kiadasEve;
+        int ara = Integer.parseInt(adatok[3]);
+        this.ara = ara;
+        ujIdGeneralas();
+    }
+
+    /* "Cím1";"Szerzo1";1987;1350 */
+    public Konyv(String cim, String szerzo, int kiadasEve, int ara){
+        this(cim, new ArrayList<>(), kiadasEve, ara);
+        szerzok.add(szerzo);
+    }
+
+    public Konyv(String cim, ArrayList<String> szerzok, int kiadasEve, int ara) {
+        this.cim = cim;
+        this.szerzok = szerzok;
+        this.kiadasEve = kiadasEve;
+        this.ara = ara;
+        ujIdGeneralas();
+    }
+
+    public void ujIdGeneralas(){
+        id = UUID.randomUUID();
+    }
+
+-Mainbe így írjuk ki ha több a szerzo: 
+public static void main(String[] args) {
+        // Példa a második konstruktor használatára, több szerzővel
+        ArrayList<String> szerzok = new ArrayList<>();
+        szerzok.add("J.K. Rowling");
+        szerzok.add("John Tiffany");
+        szerzok.add("Jack Thorne");
+
+        Konyv konyv2 = new Konyv("Harry Potter and the Cursed Child", szerzok, 2016, 4000);
+        System.out.println(konyv2.toString());
+    }
+-------------------------------------- Konstruktorba egy szót várunk, konsttruktorba egy vagy több szerző, UUID random vége --------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------- Comparable(Comparator) kezdete --------------------------------------------------------
+public class Konyv implements Comparable<Konyv>{
+    ..., konstruktor, tostring,...    
+
+@Override
+    public int compareTo(Konyv masik) {
+        /* EGÉSZ */
+        // 1. magyarázat.
+//        if(this.ev < masik.ev){
+//            return -1;
+//        }else if(this.ev > masik.ev){
+//            return 1;
+//        }else {
+//            return 0;
+//        }
+        // 2 egészekre:
+        //return this.ev - masik.ev;
+
+        /* SZÖVEG */
+        // ékezet nem jó:
+        //return this.cim.compareTo(masik.cim);
+        // ékezetek kezelése:
+        Collator coll = Collator.getInstance();
+        return coll.compare(this.cim, masik.cim);
+    }
+
+    public static EvComparator rendezEv(){
+        return new EvComparator();
+    }
+
+    public static ArComparator rendezAr(){
+        return new ArComparator();
+    }
+
+    public static SzerzoComparator rendezSzerzo(){
+        return new SzerzoComparator();
+    }
+
+    private static class EvComparator implements Comparator<Konyv> {
+         @Override
+         public int compare(Konyv egyik, Konyv masik) {
+             return egyik.ev - masik.ev;
+         }
+    }
+
+    private static class ArComparator implements Comparator<Konyv> {
+        @Override
+        public int compare(Konyv egyik, Konyv masik) {
+            return egyik.ar - masik.ar;
+        }
+    }
+
+    private static class SzerzoComparator implements Comparator<Konyv> {
+        @Override
+        public int compare(Konyv egyik, Konyv masik) {
+            Collator coll = Collator.getInstance();
+            return coll.compare(egyik.szerzo, masik.szerzo);
+        }
+    }
+
+
+
+
+
+
+-Mainbe példa adatok hozzá: 
+public class Main {
+
+    static List<Konyv> konyvek;
+
+    public static void main(String[] args) {
+        Konyv k0 = new Konyv("bbb", "sz0", 2000,1000);
+        Konyv k1 = new Konyv("aaa", "Pál", 1958,591);
+        Konyv k2 = new Konyv("aab", "Éva", 2020,12580);
+        Konyv k3 = new Konyv("báb", "Xénia", 1789,258);
+        Konyv k4 = new Konyv("axa", "Ada", 2018,11000);
+        Konyv k5 = new Konyv("bab", "Ada", 2018,11000);
+        Konyv k6 = new Konyv("aáa", "Valaki", 2018,1100);
+
+        konyvek = new ArrayList<>();
+        konyvek.add(k0);
+        konyvek.add(k1);
+        konyvek.add(k2);
+        konyvek.add(k3);
+        konyvek.add(k4);
+        konyvek.add(k5);
+        konyvek.add(k6);
+
+        kiir("Könyvek listája:");
+
+        Collections.sort(konyvek);
+        kiir("----\ncím szerint:");
+
+        konyvek.sort(Konyv.rendezEv());
+        kiir("----\név szerint:");
+
+        konyvek.sort(Konyv.rendezAr());
+        kiir("----\nár szerint:");
+
+        konyvek.sort(Konyv.rendezSzerzo());
+        kiir("----\nszerző szerint:");
+    }
+
+    private static void kiir(String cim) {
+        System.out.println(cim);
+        konyvek.forEach(System.out::println);
+    }
+}
+--------------------------------------------- Comparable(Comparator) vége --------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------ Beolvasás és azok elemzése/szűrése kezdete ------------------------------------------------------
+
+public class Main {
+    private List<Konyv> konyvek;
+    public static void main(String[] args) throws IOException {
+        new Main();
+    }
+
+    public Main() throws IOException {
+        konyvek = new ArrayList<>();
+        beolvasas();
+        feladatok();
+    }
+
+    private void beolvasas() throws IOException {
+        String fn = "konyvek.txt";
+        List<String> sorok = Files.readAllLines(Path.of(fn));
+        sorok.forEach(s -> {
+            if(!(s.contains("CÍM") || s.contains("===="))) {
+                Konyv konyv = new Konyv(s);
+                konyvek.add(konyv);
+            }
+        });
+    }
+
+    private void feladatok() {
+        System.out.println("Könyvek átlagára: " + atlagAr());
+        System.out.println("Melyik években adtak ki könyvet: " + kulonbozoEvek());
+        System.out.print("Melyik a legrégebbi kiadási év: ");
+        System.out.println(Collections.min(kulonbozoEvek()));
+        System.out.println("Melyik évben hány könyvet adtak ki:");
+        mapKiiras(melyikEvHanyKonyv());
+
+        System.out.println("Kik írtak könyvet:");//különböző szerzők
+        setKiiras(kulonbozoSzerzok());
+        System.out.println("Melyik szerző hány könyvet írt:");//melyikből mennyi
+        mapKiiras2(melyikSzerzoHanyKonyv());
+    }
+
+    private void setKiiras(Set<String> set) {
+        for (String szerzo : set) {
+            System.out.print(szerzo + " ");
+        }
+        System.out.println();
+    }
+
+    private Set<String> kulonbozoSzerzok() {
+        Set<String> kulSzerzok = new HashSet<>();
+        /* hagyományos szerkezettel: */
+//        for (Konyv konyv : konyvek) {
+//            List<String> szerzoSor = konyv.getSzerzok();
+//            for (String sor : szerzoSor) {
+//                String[] tomb = sor.split(",");
+//                for (String szerzo : tomb) {
+//                    kulSzerzok.add(szerzo);
+//                }
+//            }
+//        }
+         /* "trendi" forEach szerkezettel: */
+        konyvek.forEach(konyv -> {
+            List<String> szerzoSor = konyv.getSzerzok();
+            szerzoSor.forEach(sor ->{
+                String[] tomb = sor.split(",");
+                for (String szerzo : tomb) {
+                    kulSzerzok.add(szerzo);
+                }
+            });
+        });
+
+        return kulSzerzok;
+    }
+
+    private void mapKiiras(Map<Integer, Integer> map) {
+        /* generálva: iter */
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            int k = entry.getKey();
+            int v = entry.getValue();
+            System.out.printf("[%d] = %d db\n",k,v);
+        }
+    }
+
+    private Map<Integer, Integer> melyikEvHanyKonyv() {
+        Map<Integer, Integer> mm = new HashMap<>();
+        konyvek.forEach(konyv -> {
+            int kulcs = konyv.getKiadasEve();
+            if(mm.containsKey(kulcs)){
+                int db = mm.get(kulcs);
+                mm.put(kulcs, ++db);
+            }else{
+                mm.put(kulcs, 1);
+            }
+        });
+        return mm;
+    }
+
+    /* csak a kulcs típusa változott: Integer --> String */
+    private void mapKiiras2(Map<String, Integer> map) {
+        /* generálva: iter */
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            String k = entry.getKey();
+            int v = entry.getValue();
+            System.out.printf("[%s] = %d db\n",k,v);
+        }
+    }
+
+    /* csak a kulcs típusa változott: Integer --> String */
+    private Map<String, Integer> melyikSzerzoHanyKonyv() {
+        Map<String, Integer> mm = new HashMap<>();
+        konyvek.forEach(konyv -> {
+            List<String> szerzoSor = konyv.getSzerzok();
+            szerzoSor.forEach(sor ->{
+                String[] tomb = sor.split(",");
+                for (String kulcs : tomb) { //a kulcs a szerzo
+                    if(mm.containsKey(kulcs)){
+                        int db = mm.get(kulcs);
+                        mm.put(kulcs, ++db);
+                    }else{
+                        mm.put(kulcs, 1);
+                    }
+                }
+            });
+        });
+        return mm;
+    }
+
+    private Set<Integer> kulonbozoEvek() {
+        Set<Integer> evek = new HashSet<>();
+        konyvek.forEach(konyv -> evek.add(konyv.getKiadasEve()));
+        return evek;
+    }
+
+    private double atlagAr() {
+        int osszeg = 0;
+        /* lambda itt nem jó(sorok.forEach), mert az osszeg final kellene legyen */
+        for (Konyv konyv : konyvek) {
+            osszeg += konyv.getAra();
+        }
+        return (double)osszeg / konyvek.size();
+    }
+}
+------------------------------------ Beolvasás és azok elemzése/szűrése vége ------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------- Equal, Clone, NemLetezo..Exception kezete -------------------------------------------------
+public class Konyv implements Cloneable {
+   ..., konstruktor, tostring,...    
+
+@Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Konyv konyv = (Konyv) o;
+        return Objects.equals(cim, konyv.cim) && Objects.equals(szerzok, konyv.szerzok);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cim, szerzok);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public String getCim() {
+        return cim;
+    }
+
+    public void setCim(String cim) {
+        this.cim = cim;
+    }
+
+    public List<String> getSzerzok() {
+        return new ArrayList<>(szerzok);
+    }
+
+    public void setSzerzok(List<String> szerzok) {
+        this.szerzok = new HashSet<>(szerzok);
+    }
+
+    public int getEv() {
+        return ev;
+    }
+
+    public void setEv(int ev) {
+        if(ev < 1000){
+            throw new NemLetezoKonyvException("Az nem lehet < 1000!");
+        }
+        this.ev = ev;
+    }
+
+-NemLetezo...Exception:
+public class NemLetezoKonyvException extends RuntimeException{
+    public NemLetezoKonyvException(String message) {
+        super(message);
+    }
+}
+
+-Mainbe adatok példa:
+private static List<Konyv>konyvek = new ArrayList<>();
+    private static Set<Konyv> kulonbozoKonyvek = new HashSet<>();
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        Konyv k1 = new Konyv("cím1", "szerzo1", 1975, 583);
+        Konyv k2 = new Konyv("cím2", "szerzo2", 1993, 1724);
+        Konyv k3 = (Konyv) k1.clone();//new Konyv("cím1", "szerzo1", 2000, 2550);
+
+        k3.setAr(2550);
+        k3.setEv(2000);
+        Konyv k4 = (Konyv) k2.clone();//new Konyv("cím2", "szerzo2", 2010, 3790);
+        String sz3 = "szerző3";
+        String sz4 = "szerző4";
+        List<String> szerzok = new ArrayList<>();
+        szerzok.add(sz3);
+        szerzok.add(sz4);
+        Konyv k5 = new Konyv("cím5", szerzok, 2010, 3790);
+        Konyv k6 = new Konyv("cím6", Arrays.asList(sz3,sz4,"szerző1"), 2010, 3790);
+        kulonbozoKonyvek.add(k1);
+        kulonbozoKonyvek.add(k2);
+        kulonbozoKonyvek.add(k3);
+        kulonbozoKonyvek.add(k4);
+        kulonbozoKonyvek.add(k5);
+        kulonbozoKonyvek.add(k6);
+
+        konyvek.add(k1);
+        konyvek.add(k2);
+        konyvek.add(k3);
+        konyvek.add(k4);
+        konyvek.add(k5);
+        konyvek.add(k6);
+
+        new Main().feladatok();
+    }
+
+    void feladatok(){
+        osszesKonyv();
+        kulonbozoKonyvek();
+    }
+
+    void osszesKonyv(){
+        System.out.println("Könyvek listája:");
+        konyvek.forEach(System.out::println);
+    }
+
+    void kulonbozoKonyvek() {
+        System.out.println("különböző könyvek száma: " + kulonbozoKonyvek.size());
+    }
+--------------------------------------------------- Equal, Clone, NemLetezo..Exception vége -------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------- Binaris kiiír/beolvas egyet/többet kezdetet ---------------------------------------------------------
+...
+
+-Mainbe példa adatok: 
+private static final String EGY_KONYV = "egykonyv.dat";
+    private static final String TOBB_KONYV = "tobbkonyv.dat";
+    private static final String KONYV_LISTA = "konyvlista.dat";
+
+    private ArrayList<String> szerzok;
+
+    public static void main(String[] args) {
+        new Main().binFajlKez();
+    }
+
+    private void binFajlKez() {
+        kiirEgyKonyvet();
+        beolvasEgyKonyvet();
+
+        kiirTobbKonyvet();
+        beolvasTobbKonyvet();
+
+        kiirKonyvListat();
+        beolvasKonyvListat();
+    }
+
+    private void kiirEgyKonyvet() {
+        szerzok = new ArrayList<>();
+        szerzok.add("Szerző1");
+        Konyv k0 = new Konyv("Cím1", szerzok, 2000);
+        try(ObjectOutputStream objKi = new ObjectOutputStream(new FileOutputStream(EGY_KONYV))){
+            objKi.writeObject(k0);
+            System.out.println("1 könyv kiírva: " + k0);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void beolvasEgyKonyvet() {
+        try(ObjectInputStream objBe = new ObjectInputStream(new FileInputStream(EGY_KONYV))){
+            Konyv k = (Konyv) objBe.readObject();
+            k.ujIdGeneralas();
+            System.out.println("A beolvasott könyv állapota:");
+            System.out.println(k);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void kiirTobbKonyvet() {
+        szerzok = new ArrayList<>();
+        szerzok.add("Szerző1");
+        szerzok.add("Szerző2");
+        Konyv k1 = new Konyv("Cím1", szerzok, 2000);
+        Konyv k2 = new Konyv("Cím2", szerzok, 2014);
+        try(ObjectOutputStream objKi = new ObjectOutputStream(new FileOutputStream(TOBB_KONYV))){
+            objKi.writeObject(k1);
+            objKi.writeObject(k2);
+            System.out.println("2 könyv kiírva:");
+            System.out.println(k1);
+            System.out.println(k2);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void beolvasTobbKonyvet() {
+        try(ObjectInputStream objBe = new ObjectInputStream(new FileInputStream(TOBB_KONYV))){
+            Konyv k;
+            k = (Konyv) objBe.readObject();
+            k.ujIdGeneralas();
+            System.out.println("Az 1. beolvasott könyv állapota:");
+            System.out.println(k);
+            k = (Konyv) objBe.readObject();
+            k.ujIdGeneralas();
+            System.out.println("A 2. beolvasott könyv állapota:");
+            System.out.println(k);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void kiirKonyvListat() {
+        szerzok = new ArrayList<>();
+        szerzok.add("Szerző1");
+        szerzok.add("Szerző2");
+        Konyv k1 = new Konyv("Cím1", szerzok, 2000);
+        Konyv k2 = new Konyv("Cím2", szerzok, 2014);
+        szerzok = new ArrayList<>();
+        szerzok.add("Szerző3");
+        List<Konyv> konyvek = Arrays.asList(k1, k2, new Konyv("Cím3", szerzok, 1900));
+        try(ObjectOutputStream objKi = new ObjectOutputStream(new FileOutputStream(KONYV_LISTA))){
+            objKi.writeObject(konyvek);
+            System.out.println("könyvek (lista) kiírva");
+            System.out.println(k1);
+            System.out.println(k2);
+            System.out.println(konyvek.get(konyvek.size()-1));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void beolvasKonyvListat() {
+        try(ObjectInputStream objBe = new ObjectInputStream(new FileInputStream(KONYV_LISTA))){
+            List<Konyv> konyvek = (List<Konyv>) objBe.readObject();
+            System.out.println("A beolvasott könyvek (lista) tartalma:");
+            for (Konyv konyv : konyvek) {
+                konyv.ujIdGeneralas();
+                System.out.println(konyv);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+------------------------------------------------- Binaris kiiír/beolvas egyet/többet vége ---------------------------------------------------------
+
+
+
+
+
+
+
